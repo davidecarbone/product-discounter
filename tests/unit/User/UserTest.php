@@ -19,7 +19,7 @@ class UserTest extends TestCase
             'password' => 'test'
         ]);
 
-        $userArray = $user->exportToArray();
+        $userArray = $user->toArray();
 
         $this->assertEquals($userId, $userArray['id']);
         $this->assertEquals('test', $userArray['username']);

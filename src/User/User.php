@@ -38,7 +38,7 @@ final class User
     /**
      * @return array
      */
-    public function exportToArray(): array
+    public function toArray(): array
     {
         return [
             'id' => (string) $this->id,

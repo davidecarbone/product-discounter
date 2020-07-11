@@ -59,7 +59,7 @@ class LoginController
             ], 401);
         }
 
-        $token = $this->jwt->encode($user->exportToArray());
+        $token = $this->jwt->encode($user->toArray());
 
         return $response->withJson([
             'JWT' => $token

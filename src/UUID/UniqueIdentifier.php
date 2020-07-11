@@ -7,7 +7,7 @@ use InvalidArgumentException;
 abstract class UniqueIdentifier
 {
     /** @var string */
-    private $id;
+    protected $id;
 
     public function __construct(string $id = null)
     {

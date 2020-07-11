@@ -1,0 +1,12 @@
+default_environment: development
+
+path:
+    # migrations path is relative to current configuration dir
+    migrations: migrations
+    
+environments:
+    development:
+        dsn: mongodb://db
+        default_database: local
+        log_database: local
+        log_collection: migrations

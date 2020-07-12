@@ -28,7 +28,7 @@ class Repository
 		$products = [];
 
 		foreach ($results as $result) {
-			$products[] = Product::fromArray([
+			$products[] = Product::fromPersistence([
 				"id" => new ProductId($result['id']),
 				"sku" => $result['sku'],
 				"price" => $result['price']
@@ -39,21 +39,21 @@ class Repository
 	}
 
     /**
-     * @param string $productId
+     * @param ProductId $productId
      *
      * @return Product|null
      */
-    public function findById(string $productId): ?Product
+    public function findById(ProductId $productId): ?Product
     {
         $result = $this->collection->findOne([
-            'id' => $productId
+            'id' => (string)$productId
         ]);
 
-        if (! $result) {
+        if (!$result) {
             return null;
         }
 
-        return Product::fromArray([
+        return Product::fromPersistence([
 	        "id" => new ProductId($result['id']),
 	        "sku" => $result['sku'],
 	        "price" => $result['price']

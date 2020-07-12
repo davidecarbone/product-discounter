@@ -34,7 +34,7 @@ class ProductControllerTest extends TestCase
         $response = new Response();
         $productId = new ProductId();
         $products = [
-            Product::fromArray([
+            Product::fromPersistence([
 		        "id" => $productId,
 		        "sku" => 'DZ7SL-92XNB',
 		        "price" => 10.12
@@ -68,7 +68,7 @@ class ProductControllerTest extends TestCase
 	{
 		$response = new Response();
 		$productId = new ProductId();
-		$product = Product::fromArray([
+		$product = Product::fromPersistence([
 			"id" => $productId,
 			"sku" => 'DZ7SL-92XNB',
 			"price" => 10.12

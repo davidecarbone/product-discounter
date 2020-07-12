@@ -45,7 +45,7 @@ class ProductTest extends TestCase
 	 */
 	private function createProductWithId(ProductId $productId): Product
 	{
-		return Product::fromArray([
+		return Product::fromPersistence([
 			"id" => $productId,
 			"sku" => 'DZ7SL-92XNB',
 			"price" => 10.12

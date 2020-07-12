@@ -15,7 +15,7 @@ abstract class UniqueIdentifier
             $id = UUID::v4();
         }
 
-        if (! UUID::validate($id)) {
+        if (!UUID::validate($id)) {
             throw new InvalidArgumentException('Invalid UUID: ' . $id);
         }
 

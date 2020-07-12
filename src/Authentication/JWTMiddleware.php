@@ -29,7 +29,9 @@ class JWTMiddleware
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
     {
         if (!$this->isRequestHandlable($request) || !$this->tokenIsValid($request)) {
-            return $response->withStatus(401, "You are not authorized to access this resource.");
+	        return $response->withJson([
+		        'error' => "You are not authorized to access this resource."
+	        ], 401);
         }
 
         return $next($request, $response);

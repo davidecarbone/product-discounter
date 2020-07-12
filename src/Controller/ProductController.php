@@ -2,6 +2,7 @@
 
 namespace ProductDiscounter\Controller;
 
+use ProductDiscounter\Product\ProductId;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use ProductDiscounter\Product\Product;
@@ -45,7 +46,7 @@ class ProductController
 		$productId = $request->getAttribute('productId');
 
 		try {
-			$product = $this->repository->findById($productId);
+			$product = $this->repository->findById(new ProductId($productId));
 
 			$this->assertProductExists($product);
 

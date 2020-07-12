@@ -2,7 +2,7 @@
 
 namespace ProductDiscounter\Product;
 
-class Product implements \JsonSerializable
+final class Product implements \JsonSerializable
 {
     /** @var ProductId */
     private $id;
@@ -18,10 +18,9 @@ class Product implements \JsonSerializable
      *
      * @return Product
      */
-    public static function fromArray(array $productData): Product
+    public static function fromPersistence(array $productData): Product
     {
         $product = new self();
-
         $product->id = $productData['id'];
         $product->sku = $productData['sku'];
         $product->price = $productData['price'];

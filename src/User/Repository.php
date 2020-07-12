@@ -44,7 +44,7 @@ class Repository
     {
         $userData = $this->findUserDataByUsername($username);
 
-        if ( ! $userData || ! $password->validateAgainstHash($userData['password'])) {
+        if (!$userData || !$password->validateAgainstHash($userData['password'])) {
             return null;
         };
 

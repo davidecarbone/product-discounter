@@ -20,6 +20,41 @@ class CartsTest extends ContainerAwareTest
         $this->client = $this->container->get('HttpClient');
     }
 
+	/** @test */
+	public function get_products_should_respond_200_with_array()
+	{
+		$response = $this->client->get('carts/products', [
+			'headers' => ['JWT' => self::TEST_VALID_JWT],
+		]);
+
+		$responseBody = json_decode($response->getBody(), true);
+
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertIsArray($responseBody);
+
+	}
+
+	/** @test */
+	public function get_products_with_invalid_jwt_should_respond_401_with_an_error()
+	{
+		$statusCode = null;
+		$responseBody = [];
+
+		try {
+			$this->client->get('carts/products', [
+				'headers' => ['JWT' => self::TEST_INVALID_JWT],
+			]);
+		} catch (ClientException $e) {
+			if ($e->hasResponse()) {
+				$statusCode = $e->getResponse()->getStatusCode();
+				$responseBody = json_decode($e->getResponse()->getBody()->getContents(), true);
+			}
+		}
+
+		$this->assertEquals(401, $statusCode);
+		$this->assertArrayHasKey('error', $responseBody);
+	}
+
     /** @test */
     public function put_products_with_a_valid_product_should_respond_200_with_a_message()
     {

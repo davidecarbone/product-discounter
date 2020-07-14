@@ -68,9 +68,13 @@ final class Cart
      */
     public function exportProductsToArray(): array
     {
-        $productArray = [];
+        if (empty($this->products)) {
+        	return [];
+        }
 
-        foreach ($this->products as $product) {
+	    $productArray = [];
+
+	    foreach ($this->products as $product) {
             $productArray[] = $product->toArray();
         }
 

@@ -35,6 +35,23 @@ class CartController
         $this->jwt = $jwt;
     }
 
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
+	public function getProducts(Request $request, Response $response)
+	{
+		$userData = $this->retrieveUserDataFromRequest($request);
+		$cart = $this->cartRepository->findByUserId(new UserId($userData['id']));
+
+		return $response->withJson(
+			empty($cart) ? [] : $cart->exportProductsToArray(),
+			200
+		);
+	}
+
     /**
      * @param Request  $request
      * @param Response $response

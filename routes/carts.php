@@ -9,6 +9,22 @@ use ProductDiscounter\Authentication\JWT;
 use ProductDiscounter\Configuration\Configuration;
 use ProductDiscounter\Controller\CartController;
 
+$app->get('/carts/products', function (Request $request, Response $response) {
+
+	$cartRepository = $this->get('Cart/Repository');
+	$productRepository = $this->get('Product/Repository');
+
+	/** @var Configuration */
+	$configuration = $this->get('Configuration');
+
+	$jwt = new JWT($configuration->get('JWT_SECRET'));
+
+	$controller = new CartController($cartRepository, $productRepository, $jwt);
+
+	return $controller->getProducts($request, $response);
+})
+->add($container->get('JWTMiddleware'));
+
 $app->put('/carts/products/{productId}', function (Request $request, Response $response) {
 
     $cartRepository = $this->get('Cart/Repository');

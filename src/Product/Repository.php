@@ -59,4 +59,28 @@ class Repository
 	        "price" => $result['price']
         ]);
     }
+
+	/**
+	 * @param array $productSkus
+	 *
+	 * @return Product[]
+	 */
+	public function findMultipleBySkus(array $productSkus)
+	{
+		$results = $this->collection->find([
+			'sku' => ['$in' => $productSkus]
+		]);
+
+		$products = [];
+
+		foreach ($results as $result) {
+			$products[] = Product::fromPersistence([
+				"id" => new ProductId($result['id']),
+				"sku" => $result['sku'],
+				"price" => $result['price']
+			]);
+		}
+
+		return $products;
+	}
 }

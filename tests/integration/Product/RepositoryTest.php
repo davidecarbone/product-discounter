@@ -35,4 +35,13 @@ class RepositoryTest extends ContainerAwareTest
 
         $this->assertInstanceOf(Product::class, $product);
     }
+
+	/** @test */
+	public function can_find_multiple_products_by_skus()
+	{
+		$products = $this->repository->findMultipleBySkus(['DZ7SL-92XNB', 'KRG26-FMWPJ', 'WPNSN-HAXFO']);
+
+		$this->assertIsArray($products);
+		$this->assertCount(3, $products);
+	}
 }

@@ -11,6 +11,7 @@ use ProductDiscounter\Cart\Cart;
 class CartTest extends TestCase
 {
 	private const TEST_PRODUCT_SKU = 'DZ7SL-92XNB';
+	private const TEST_PRODUCT_SKU_2 = 'DZ7SL-92XNC';
 	private const TEST_PRODUCT_PRICE = 10.12;
 
 	/** @test */
@@ -18,9 +19,8 @@ class CartTest extends TestCase
     {
         $productId = new ProductId();
         $userId = new UserId();
-        $product = $this->createProductWithId($productId);
+        $product = $this->createProductWithIdAndSku($productId);
         $cart = Cart::withUserIdAndProducts($userId, [$product]);
-
         $cartData = $cart->toArray();
 
         $this->assertEquals($userId, $cartData['userId']);
@@ -62,16 +62,16 @@ class CartTest extends TestCase
     {
         $productId1 = new ProductId();
         $productId2 = new ProductId();
-        $product1 = $this->createProductWithId($productId1);
-        $product2 = $this->createProductWithId($productId2);
+        $product1 = $this->createProductWithIdAndSku($productId1);
+        $product2 = $this->createProductWithIdAndSku($productId2, self::TEST_PRODUCT_SKU_2);
 
         $cart = Cart::withUserIdAndProducts(new UserId(), [$product1]);
         $cart->addProduct($product2);
 
         $cartData = $cart->toArray();
         $expectedCartData = [
-            0 => ['id' => $productId1, 'sku' => self::TEST_PRODUCT_SKU, 'price' => self::TEST_PRODUCT_PRICE],
-            1 => ['id' => $productId2, 'sku' => self::TEST_PRODUCT_SKU, 'price' => self::TEST_PRODUCT_PRICE],
+	        ['id' => $productId1, 'sku' => self::TEST_PRODUCT_SKU, 'price' => self::TEST_PRODUCT_PRICE],
+	        ['id' => $productId2, 'sku' => self::TEST_PRODUCT_SKU_2, 'price' => self::TEST_PRODUCT_PRICE],
         ];
 
         $this->assertEquals($expectedCartData, $cartData['products']);
@@ -81,8 +81,8 @@ class CartTest extends TestCase
     public function adding_a_product_already_added_before_will_be_ignored()
     {
         $productId = new ProductId();
-	    $product1 = $this->createProductWithId($productId);
-	    $product2 = $this->createProductWithId($productId);
+	    $product1 = $this->createProductWithIdAndSku($productId);
+	    $product2 = $this->createProductWithIdAndSku($productId);
 
         $cart = Cart::withUserIdAndProducts(new UserId(), [$product1]);
         $cart->addProduct($product2);
@@ -98,16 +98,40 @@ class CartTest extends TestCase
 	    ], $cartData['products']);
     }
 
+    /** @test */
+    /*public function contains_a_bundle_if_contains_all_products_included_in_a_bundle()
+    {
+	    $cart = Cart::fromPersistence([
+		    '_id' => '5e2b2458d68a0ef028767cbc',
+		    'userId' => "4d8f38dc-05d4-42a6-93fe-69a72fc533b1",
+		    'products' => [
+			    ['id' => 'ffe089af-3ffc-4ac1-a7da-db4e09ad20b7', 'sku' => 'TEST-1', 'price' => 100],
+			    ['id' => '294786ac-8306-4e85-adb4-3c328727660f', 'sku' => 'TEST-2', 'price' => 50],
+			    ['id' => '748112ab-0e2c-4060-919a-8c4c069386fb', 'sku' => 'TEST-3', 'price' => 200],
+			    ['id' => '748112ab-0e2c-4060-919a-8c4c069386fb', 'sku' => 'TEST-4', 'price' => 150],
+		    ]
+	    ]);
+
+	    $bundle = Bundle::fromPersistence([
+		    'id' => '1',
+		    'productSkus' => ['TEST-2', 'TEST-1', 'TEST-3'],
+		    'discountPercentage' => 10
+	    ]);
+
+	    $this->assertTrue($cart->cartContainsBundle($bundle));
+    }*/
+
 	/**
 	 * @param ProductId $productId
+	 * @param string    $sku
 	 *
 	 * @return Product
 	 */
-	private function createProductWithId(ProductId $productId): Product
+	private function createProductWithIdAndSku(ProductId $productId, string $sku = self::TEST_PRODUCT_SKU): Product
 	{
 		return Product::fromPersistence([
 			"id" => $productId,
-			"sku" => self::TEST_PRODUCT_SKU,
+			"sku" => $sku,
 			"price" => self::TEST_PRODUCT_PRICE
 		]);
 	}

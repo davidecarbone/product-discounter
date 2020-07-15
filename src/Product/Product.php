@@ -58,4 +58,12 @@ final class Product implements \JsonSerializable
     {
 	    return $this->toArray();
     }
+
+	/**
+	 * @param int $discountPercentage
+	 */
+    public function applyDiscountPercentage(int $discountPercentage)
+    {
+	    $this->price -= ($this->price * $discountPercentage) / 100;
+    }
 }

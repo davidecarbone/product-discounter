@@ -93,32 +93,18 @@ final class Cart
         ];
     }
 
-    /**
-     * @param Product $product
-     *
-     * @return bool
-     */
-    public function containsProduct(Product $product): bool
+	/**
+	 * @return float
+	 */
+    public function totalPrice(): float
     {
-        if ($this->numberOfProducts() === 0) {
-            return false;
-        }
+    	$totalPrice = 0;
 
-        foreach ($this->products as $savedProduct) {
-            if ($savedProduct->isEqualTo($product)) {
-                return true;
-            }
-        }
+	    foreach ($this->products as $product) {
+		    $totalPrice += $product->toArray()['price'];
+	    }
 
-        return false;
-    }
-
-    /**
-     * @return int
-     */
-    public function numberOfProducts(): int
-    {
-        return count($this->products);
+	    return $totalPrice;
     }
 
     /**
@@ -127,7 +113,55 @@ final class Cart
     public function addProduct(Product $product)
     {
         if (!$this->containsProduct($product)) {
-            $this->products[] = $product;
+        	$sku = $product->toArray()['sku'];
+            $this->products[$sku] = $product;
         }
     }
+
+	/**
+	 * @param int   $discountPercentage
+	 * @param array $skuToBeDiscounted
+	 */
+	public function applyDiscountPercentageToProductsBySku(int $discountPercentage, array $skuToBeDiscounted)
+	{
+		foreach ($this->products as $sku => $product) {
+			if (in_array($sku, $skuToBeDiscounted)) {
+				$product->applyDiscountPercentage($discountPercentage);
+			}
+		}
+	}
+
+	/**
+	 * @param Product $product
+	 *
+	 * @return bool
+	 */
+	private function containsProduct(Product $product): bool
+	{
+		if (count($this->products) === 0) {
+			return false;
+		}
+
+		foreach ($this->products as $savedProduct) {
+			if ($savedProduct->isEqualTo($product)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function allProductSkus(): array
+	{
+		$productSkus = [];
+
+		foreach ($this->products as $product) {
+			$productSkus[] = $product->toArray()['sku'];
+		}
+
+		return $productSkus;
+	}
 }

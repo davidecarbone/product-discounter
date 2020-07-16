@@ -6,6 +6,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ProductDiscounter\Cart\Cart;
 use ProductDiscounter\Configuration\Configuration;
+use ProductDiscounter\DiscounterEngine\DiscounterEngine;
 use ProductDiscounter\Order\OrderId;
 use Slim\Http\Environment;
 use Slim\Http\Request;
@@ -27,10 +28,13 @@ class OrderControllerTest extends TestCase
     /** @var CartRepository | MockObject */
     private $cartRepositoryMock;
 
+	/** @var DiscounterEngine | MockObject */
+	private $discounterEngineMock;
+
 	/** @var JWT | MockObject */
 	private $jwtMock;
 
-	/** @var Configuration | MockObject */
+	/** @var Configuration */
 	private $configuration;
 
     public function setUp()
@@ -39,10 +43,11 @@ class OrderControllerTest extends TestCase
 
 	    $this->orderRepositoryMock = $this->createMock(OrderRepository::class);
 	    $this->cartRepositoryMock = $this->createMock(CartRepository::class);
+	    $this->discounterEngineMock = $this->createMock(DiscounterEngine::class);
         $this->jwtMock = $this->createMock(JWT::class);
         $this->configuration = new Configuration(['API_BASE_URL' => 'test']);
 	    $this->orderController = new OrderController($this->orderRepositoryMock, $this->cartRepositoryMock,
-		    $this->jwtMock, $this->configuration);
+		    $this->discounterEngineMock, $this->jwtMock, $this->configuration);
     }
 
 	/** @test */
@@ -82,6 +87,11 @@ class OrderControllerTest extends TestCase
 			->expects($this->once())
 			->method('removeById')
 			->with('123');
+
+		$this->discounterEngineMock
+			->expects($this->once())
+			->method('applyDiscountToCart')
+			->with($cart);
 
 		$environment = Environment::mock([
 			'REQUEST_METHOD' => 'POST',
@@ -126,6 +136,10 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->never())
 			->method('removeById');
+
+		$this->discounterEngineMock
+			->expects($this->never())
+			->method('applyDiscountToCart');
 
 		$environment = Environment::mock([
 			'REQUEST_METHOD' => 'POST',
@@ -182,6 +196,10 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->never())
 			->method('removeById');
+
+		$this->discounterEngineMock
+			->expects($this->never())
+			->method('applyDiscountToCart');
 
 		$environment = Environment::mock([
 			'REQUEST_METHOD' => 'POST',

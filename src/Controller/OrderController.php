@@ -9,6 +9,7 @@ use ProductDiscounter\Cart\CartNotFoundException;
 use ProductDiscounter\Cart\CartOwnershipException;
 use ProductDiscounter\Cart\Repository as CartRepository;
 use ProductDiscounter\Configuration\Configuration;
+use ProductDiscounter\DiscounterEngine\DiscounterEngine;
 use ProductDiscounter\Order\Order;
 use ProductDiscounter\Order\Repository as OrderRepository;
 use ProductDiscounter\User\User;
@@ -23,6 +24,9 @@ class OrderController
 	/** @var CartRepository */
     private $cartRepository;
 
+	/** @var DiscounterEngine */
+	private $discounterEngine;
+
     /** @var JWT */
     private $jwt;
 
@@ -30,18 +34,21 @@ class OrderController
 	private $configuration;
 
 	/**
-	 * @param OrderRepository $orderRepository
-	 * @param CartRepository  $cartRepository
-	 * @param JWT             $jwt
-	 * @param Configuration   $configuration
+	 * @param OrderRepository  $orderRepository
+	 * @param CartRepository   $cartRepository
+	 * @param DiscounterEngine $discounterEngine
+	 * @param JWT              $jwt
+	 * @param Configuration    $configuration
 	 */
-    public function __construct(OrderRepository $orderRepository, CartRepository $cartRepository, JWT $jwt,
-                                Configuration $configuration)
+    public function __construct(OrderRepository $orderRepository, CartRepository $cartRepository,
+                                DiscounterEngine $discounterEngine, JWT $jwt, Configuration $configuration)
     {
         $this->orderRepository = $orderRepository;
         $this->cartRepository = $cartRepository;
+        $this->discounterEngine = $discounterEngine;
         $this->jwt = $jwt;
         $this->configuration = $configuration;
+	    $this->discounterEngine = $discounterEngine;
     }
 
 	/**
@@ -59,8 +66,11 @@ class OrderController
 
 		try {
 			$cart = $this->cartRepository->findById($cartId);
+
 			$this->assertCartExists($cart);
 			$this->assertCartBelongsToUser($cart, $user);
+
+			$this->discounterEngine->applyDiscountToCart($cart);
 
 		} catch (InvalidArgumentException $e) {
 			return $response->withJson([
@@ -76,7 +86,6 @@ class OrderController
 		$orderId = (string)$this->orderRepository->insertOrder($order);
 
 		$this->cartRepository->removeById($cartId);
-		// TODO call discountManager
 
 		return $response
 			->withHeader('Location', $this->configuration->get('API_BASE_URL') . "orders/$orderId")

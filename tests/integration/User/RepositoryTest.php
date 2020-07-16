@@ -20,9 +20,9 @@ class RepositoryTest extends ContainerAwareTest
     }
 
     /** @test */
-    public function users_can_be_fetched_by_username_and_password()
+    public function can_find_users_by_username_and_password()
     {
-        $user = $this->repository->findUserByUsernameAndPassword('admin', new Password('admin'));
+        $user = $this->repository->findUserByUsernameAndPassword('user', new Password('user'));
 
         $this->assertInstanceOf(User::class, $user);
     }

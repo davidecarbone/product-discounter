@@ -85,7 +85,7 @@ class CartControllerTest extends TestCase
 	}
 
     /** @test */
-    public function put_products_with_a_valid_product_should_respond_200_with_a_message()
+    public function put_products_with_a_valid_product_should_respond_200_with_message_and_cart_id()
     {
         $response = new Response();
         $productId = new ProductId();
@@ -125,6 +125,7 @@ class CartControllerTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('message', $responseContent);
+	    $this->assertArrayHasKey('cartId', $responseContent);
     }
 
     /** @test */

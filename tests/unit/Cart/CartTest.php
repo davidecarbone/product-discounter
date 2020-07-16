@@ -98,29 +98,6 @@ class CartTest extends TestCase
 	    ], $cartData['products']);
     }
 
-    /** @test */
-    /*public function contains_a_bundle_if_contains_all_products_included_in_a_bundle()
-    {
-	    $cart = Cart::fromPersistence([
-		    '_id' => '5e2b2458d68a0ef028767cbc',
-		    'userId' => "4d8f38dc-05d4-42a6-93fe-69a72fc533b1",
-		    'products' => [
-			    ['id' => 'ffe089af-3ffc-4ac1-a7da-db4e09ad20b7', 'sku' => 'TEST-1', 'price' => 100],
-			    ['id' => '294786ac-8306-4e85-adb4-3c328727660f', 'sku' => 'TEST-2', 'price' => 50],
-			    ['id' => '748112ab-0e2c-4060-919a-8c4c069386fb', 'sku' => 'TEST-3', 'price' => 200],
-			    ['id' => '748112ab-0e2c-4060-919a-8c4c069386fb', 'sku' => 'TEST-4', 'price' => 150],
-		    ]
-	    ]);
-
-	    $bundle = Bundle::fromPersistence([
-		    'id' => '1',
-		    'productSkus' => ['TEST-2', 'TEST-1', 'TEST-3'],
-		    'discountPercentage' => 10
-	    ]);
-
-	    $this->assertTrue($cart->cartContainsBundle($bundle));
-    }*/
-
 	/**
 	 * @param ProductId $productId
 	 * @param string    $sku

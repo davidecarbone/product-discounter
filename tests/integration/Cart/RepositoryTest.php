@@ -34,7 +34,7 @@ class RepositoryTest extends ContainerAwareTest
     }
 
     /** @test */
-    public function can_add_products_to_cart()
+    public function can_insert_carts()
     {
         $userId = new UserId();
 
@@ -43,8 +43,7 @@ class RepositoryTest extends ContainerAwareTest
 	            "id" => new ProductId(),
 	            "sku" => 'DZ7SL-92XNB',
 	            "price" => 10.12
-            ]), $userId)
-            ->getUpsertedId();
+            ]), $userId);
 
         $cart = $this->repository->findByUserId($userId);
 

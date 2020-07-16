@@ -4,7 +4,6 @@ namespace ProductDiscounter\Cart;
 
 use MongoDB\BSON\ObjectID;
 use MongoDB\Collection;
-use MongoDB\UpdateResult;
 use ProductDiscounter\Product\Product;
 use ProductDiscounter\User\UserId;
 
@@ -22,6 +21,24 @@ class Repository
     {
         $this->collection = $collection;
     }
+
+	/**
+	 * @param string $cartId
+	 *
+	 * @return Cart|null
+	 */
+	public function findById(string $cartId): ?Cart
+	{
+		$result = $this->collection->findOne([
+			'_id' => new ObjectId($cartId)
+		]);
+
+		if (!$result) {
+			return null;
+		}
+
+		return Cart::fromPersistence($result);
+	}
 
     /**
      * @param UserId $userId
@@ -45,9 +62,9 @@ class Repository
      * @param Product $product
      * @param UserId  $userId
      *
-     * @return UpdateResult
+     * @return string
      */
-    public function addProduct(Product $product, UserId $userId): UpdateResult
+    public function addProduct(Product $product, UserId $userId): string
     {
         $cart = $this->findByUserId($userId);
 
@@ -55,11 +72,13 @@ class Repository
             ? $cart = Cart::withUserIdAndProducts($userId, [$product])
             : $cart->addProduct($product);
 
-        return $this->collection->updateOne(
+        $result = $this->collection->updateOne(
             ['userId' => (string)$userId],
             ['$set' => ['products' => $cart->exportProductsToArray()]],
             ['upsert' => true]
         );
+
+        return (string)$result->getUpsertedId();
     }
 
     /**

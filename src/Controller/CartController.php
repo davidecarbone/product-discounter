@@ -61,13 +61,13 @@ class CartController
     public function putProducts(Request $request, Response $response)
     {
         $productId = $request->getAttribute('productId');
-        $userData = $this->retrieveUserDataFromRequest($request);
 
-        try {
-            $product = $this->productRepository->findById(new ProductId($productId));
+	    try {
+		    $userData = $this->retrieveUserDataFromRequest($request);
+		    $product = $this->productRepository->findById(new ProductId($productId));
 
             $this->assertProductExists($product);
-            $this->cartRepository->addProduct($product, new UserId($userData['id']));
+            $cartId = $this->cartRepository->addProduct($product, new UserId($userData['id']));
 
         } catch (ProductNotFoundException $exception) {
             return $response->withJson([
@@ -76,6 +76,7 @@ class CartController
         }
 
         return $response->withJson([
+        	'cartId' => $cartId,
             'message' => 'Product has been added to your cart.'
         ], 200);
     }

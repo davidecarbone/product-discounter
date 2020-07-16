@@ -16,13 +16,19 @@ class UserTest extends TestCase
         $user = User::fromArray([
             'id' => $userId,
             'username' => 'test',
-            'password' => 'test'
+            'password' => 'test',
+	        'fullName' => 'test test',
+	        'address' => 'Via test',
+	        'email' => 'test@test.com'
         ]);
 
         $userArray = $user->toArray();
 
         $this->assertEquals($userId, $userArray['id']);
         $this->assertEquals('test', $userArray['username']);
+        $this->assertEquals('test test', $userArray['fullName']);
+        $this->assertEquals('Via test', $userArray['address']);
+        $this->assertEquals('test@test.com', $userArray['email']);
         $this->assertArrayHasKey('password', $userArray);
     }
 }

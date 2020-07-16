@@ -1,0 +1,217 @@
+<?php
+
+namespace ProductDiscounter\Tests\Unit\Controller;
+
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use ProductDiscounter\Cart\Cart;
+use ProductDiscounter\Configuration\Configuration;
+use ProductDiscounter\Order\OrderId;
+use Slim\Http\Environment;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use ProductDiscounter\Authentication\JWT;
+use ProductDiscounter\Controller\OrderController;
+use ProductDiscounter\User\UserId;
+use ProductDiscounter\Cart\Repository as CartRepository;
+use ProductDiscounter\Order\Repository as OrderRepository;
+
+class OrderControllerTest extends TestCase
+{
+    /** @var OrderController */
+    private $orderController;
+
+	/** @var OrderRepository | MockObject */
+	private $orderRepositoryMock;
+
+    /** @var CartRepository | MockObject */
+    private $cartRepositoryMock;
+
+	/** @var JWT | MockObject */
+	private $jwtMock;
+
+	/** @var Configuration | MockObject */
+	private $configuration;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+	    $this->orderRepositoryMock = $this->createMock(OrderRepository::class);
+	    $this->cartRepositoryMock = $this->createMock(CartRepository::class);
+        $this->jwtMock = $this->createMock(JWT::class);
+        $this->configuration = new Configuration(['API_BASE_URL' => 'test']);
+	    $this->orderController = new OrderController($this->orderRepositoryMock, $this->cartRepositoryMock,
+		    $this->jwtMock, $this->configuration);
+    }
+
+	/** @test */
+	public function post_orders_with_valid_cart_should_respond_201_with_a_message()
+	{
+		$response = new Response();
+		$userId = new UserId();
+		$cart = Cart::fromPersistence([
+			"_id" => '123',
+			"userId" => $userId,
+			"products" => [
+				[
+					'id' => '294786ac-8306-4e85-adb4-3c328727660f',
+					'sku' => 'DZ7SL-92XNB',
+					'price' => 10.12
+				]
+			]
+		]);
+
+		$this->jwtMock
+			->expects($this->once())
+			->method('decode')
+			->willReturn(['id' => (string)$userId, 'username' => 'test', 'password' => 'test']);
+
+		$this->cartRepositoryMock
+			->expects($this->once())
+			->method('findById')
+			->with('123')
+			->willReturn($cart);
+
+		$this->orderRepositoryMock
+			->expects($this->once())
+			->method('insertOrder')
+			->willReturn(new OrderId());
+
+		$this->cartRepositoryMock
+			->expects($this->once())
+			->method('removeById')
+			->with('123');
+
+		$environment = Environment::mock([
+			'REQUEST_METHOD' => 'POST',
+			'REQUEST_URI' => "/orders",
+			'QUERY_STRING' => ''
+		]);
+		$request = Request::createFromEnvironment($environment);
+		$request = $request->withHeader('JWT', 'abc123');
+		$request = $request->withParsedBody([
+			'cartId' => '123',
+		]);
+
+		$response = $this->orderController->postOrders($request, $response);
+		$responseContent = $this->getResponseContent($response);
+
+		$this->assertEquals(201, $response->getStatusCode());
+		$this->assertIsArray($responseContent);
+		$this->assertArrayHasKey('message', $responseContent);
+	}
+
+	/** @test */
+	public function post_orders_with_non_existing_cart_should_respond_422_with_an_error()
+	{
+		$response = new Response();
+		$userId = new UserId();
+
+		$this->jwtMock
+			->expects($this->once())
+			->method('decode')
+			->willReturn(['id' => (string)$userId, 'username' => 'test', 'password' => 'test']);
+
+		$this->cartRepositoryMock
+			->expects($this->once())
+			->method('findById')
+			->with('123')
+			->willReturn(null);
+
+		$this->orderRepositoryMock
+			->expects($this->never())
+			->method('insertOrder');
+
+		$this->cartRepositoryMock
+			->expects($this->never())
+			->method('removeById');
+
+		$environment = Environment::mock([
+			'REQUEST_METHOD' => 'POST',
+			'REQUEST_URI' => "/orders",
+			'QUERY_STRING' => ''
+		]);
+		$request = Request::createFromEnvironment($environment);
+		$request = $request->withHeader('JWT', 'abc123');
+		$request = $request->withParsedBody([
+			'cartId' => '123',
+		]);
+
+		$response = $this->orderController->postOrders($request, $response);
+		$responseContent = $this->getResponseContent($response);
+
+		$this->assertEquals(422, $response->getStatusCode());
+		$this->assertIsArray($responseContent);
+		$this->assertArrayHasKey('error', $responseContent);
+	}
+
+	/** @test */
+	public function post_orders_with_cart_not_belonging_to_user_should_respond_422_with_an_error()
+	{
+		$response = new Response();
+		$userId = new UserId();
+		$anotherUserId = new UserId();
+		$cart = Cart::fromPersistence([
+			"_id" => '123',
+			"userId" => $anotherUserId,
+			"products" => [
+				[
+					'id' => '294786ac-8306-4e85-adb4-3c328727660f',
+					'sku' => 'DZ7SL-92XNB',
+					'price' => 10.12
+				]
+			]
+		]);
+
+		$this->jwtMock
+			->expects($this->once())
+			->method('decode')
+			->willReturn(['id' => (string)$userId, 'username' => 'test', 'password' => 'test']);
+
+		$this->cartRepositoryMock
+			->expects($this->once())
+			->method('findById')
+			->with('123')
+			->willReturn($cart);
+
+		$this->orderRepositoryMock
+			->expects($this->never())
+			->method('insertOrder');
+
+		$this->cartRepositoryMock
+			->expects($this->never())
+			->method('removeById');
+
+		$environment = Environment::mock([
+			'REQUEST_METHOD' => 'POST',
+			'REQUEST_URI' => "/orders",
+			'QUERY_STRING' => ''
+		]);
+		$request = Request::createFromEnvironment($environment);
+		$request = $request->withHeader('JWT', 'abc123');
+		$request = $request->withParsedBody([
+			'cartId' => '123',
+		]);
+
+		$response = $this->orderController->postOrders($request, $response);
+		$responseContent = $this->getResponseContent($response);
+
+		$this->assertEquals(422, $response->getStatusCode());
+		$this->assertIsArray($responseContent);
+		$this->assertArrayHasKey('error', $responseContent);
+	}
+
+    /**
+     * @param Response $response
+     *
+     * @return array
+     */
+    private function getResponseContent(Response $response): array
+    {
+        $body = $response->getBody();
+        $body->rewind();
+
+        return json_decode($body->getContents(), true);
+    }
+}

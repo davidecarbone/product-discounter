@@ -20,7 +20,7 @@ class LoginTest extends ContainerAwareTest
     public function post_login_should_respond_with_a_jwt_token()
     {
         $response = $this->client->post('login', [
-            'json' => ['username' => 'admin', 'password' => 'admin']
+            'json' => ['username' => 'user', 'password' => 'user']
         ]);
 
         $responseBody = json_decode($response->getBody(), true);

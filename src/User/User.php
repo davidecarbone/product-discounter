@@ -15,6 +15,15 @@ final class User
     /** @var Password */
     private $password;
 
+	/** @var string */
+    private $fullName;
+
+	/** @var string */
+    private $address;
+
+	/** @var string */
+    private $email;
+
     /**
      * @param array $data
      *
@@ -25,8 +34,11 @@ final class User
         $user = new self();
 
         $user->id = new UserId($data['id']);
-        $user->username = $data['username'];
-        $user->password = new Password($data['password']);
+        $user->username = $data['username'] ?? null;
+        $user->password = $data['password'] ? new Password($data['password']) : null;
+	    $user->fullName = $data['fullName'];
+	    $user->address = $data['address'];
+	    $user->email = $data['email'];
 
         return $user;
     }
@@ -41,9 +53,12 @@ final class User
     public function toArray(): array
     {
         return [
-            'id' => (string) $this->id,
+            'id' => (string)$this->id,
             'username' => $this->username,
             'password' => $this->password->getHash(),
+	        'fullName' => $this->fullName,
+	        'address' => $this->address,
+	        'email' => $this->email,
         ];
     }
 }

@@ -54,6 +54,9 @@ final class Product implements \JsonSerializable
         ];
     }
 
+	/**
+	 * @return array
+	 */
     public function jsonSerialize(): array
     {
 	    return $this->toArray();

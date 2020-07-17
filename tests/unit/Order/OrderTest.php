@@ -17,7 +17,7 @@ class OrderTest extends TestCase
     {
         $productId = new ProductId();
         $userId = new UserId();
-        $product = $this->createProductWithIdAndSku($productId);
+        $product = $this->createProductWithId($productId);
         $cart = Cart::withUserIdAndProducts($userId, [$product]);
 	    $user = User::fromArray([
 		    'id' => $userId,
@@ -34,11 +34,10 @@ class OrderTest extends TestCase
 
 	/**
 	 * @param ProductId $productId
-	 * @param string    $sku
 	 *
 	 * @return Product
 	 */
-	private function createProductWithIdAndSku(ProductId $productId): Product
+	private function createProductWithId(ProductId $productId): Product
 	{
 		return Product::fromPersistence([
 			"id" => $productId,

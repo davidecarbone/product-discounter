@@ -7,7 +7,7 @@ use ProductDiscounter\PaymentType\FakePaymentType;
 use ProductDiscounter\PaymentType\PaymentType;
 use ProductDiscounter\User\User;
 
-final class Order
+final class Order implements \JsonSerializable
 {
 	/** @var OrderId */
 	private $id;
@@ -50,17 +50,17 @@ final class Order
 	public static function fromPersistence(array $orderData): Order
 	{
 		$order = new self();
-		$order->id = new OrderId();
+		$order->id = new OrderId($orderData['id']);
 		$order->cart = Cart::fromPersistence([
 			'id' => $orderData['cart']['id'],
-			'userId' => $orderData['cart']['userId'],
+			'userId' => $orderData['userId'],
 			'products' => $orderData['cart']['products']
 		]);
 		$order->user = User::fromArray([
 			'id' => $orderData['cart']['userId'],
 			'fullName' => $orderData['userFullName'],
-			'address' => $orderData['address'],
-			'email' => $orderData['email'],
+			'address' => $orderData['userAddress'],
+			'email' => $orderData['userEmail'],
 		]);
 		$order->paymentType = new FakePaymentType();
 
@@ -76,11 +76,20 @@ final class Order
 
 		return [
 			'id' => (string)$this->id,
+			'userId' => $userData['id'],
 			'userFullName' => $userData['fullName'],
 			'userAddress' => $userData['address'],
 			'userEmail' => $userData['email'],
 			'cart' => $this->cart->toArray(),
 			'paymentType' => (string)$this->paymentType
 		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array
+	{
+		return $this->toPersistence();
 	}
 }

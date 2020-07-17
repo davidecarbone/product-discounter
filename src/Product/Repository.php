@@ -27,6 +27,10 @@ class Repository
 		$results = $this->collection->find();
 		$products = [];
 
+		if (!$results) {
+			return [];
+		}
+
 		foreach ($results as $result) {
 			$products[] = Product::fromPersistence([
 				"id" => new ProductId($result['id']),
@@ -70,6 +74,10 @@ class Repository
 		$results = $this->collection->find([
 			'sku' => ['$in' => $productSkus]
 		]);
+
+		if (!$results) {
+			return [];
+		}
 
 		$products = [];
 

@@ -19,7 +19,7 @@ get:
                 sku:
                   type: string
                 price:
-                  type: float
+                  type: number
             example:
               [
                 {

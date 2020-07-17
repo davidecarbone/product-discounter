@@ -47,7 +47,7 @@ final class Cart
     public static function fromPersistence(array $cartData): Cart
     {
         $cart = new self();
-        $cart->id = (string)$cartData['_id'];
+        $cart->id = (string)$cartData['id'];
         $cart->userId = new UserId($cartData['userId']);
 
         foreach ($cartData['products'] as $productData) {
@@ -132,6 +132,20 @@ final class Cart
 	}
 
 	/**
+	 * @return array
+	 */
+	public function allProductSkus(): array
+	{
+		$productSkus = [];
+
+		foreach ($this->products as $product) {
+			$productSkus[] = $product->toArray()['sku'];
+		}
+
+		return $productSkus;
+	}
+
+	/**
 	 * @param Product $product
 	 *
 	 * @return bool
@@ -149,19 +163,5 @@ final class Cart
 		}
 
 		return false;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function allProductSkus(): array
-	{
-		$productSkus = [];
-
-		foreach ($this->products as $product) {
-			$productSkus[] = $product->toArray()['sku'];
-		}
-
-		return $productSkus;
 	}
 }

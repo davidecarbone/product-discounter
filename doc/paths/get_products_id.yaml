@@ -26,7 +26,7 @@ get:
                 type: string
                 example: DZ7SL-92XNB
               price:
-                type: float
+                type: number
                 example: 49.47
     '400':
       $ref: '../components.yaml#components/responses/BadRequest'

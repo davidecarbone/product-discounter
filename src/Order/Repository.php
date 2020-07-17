@@ -4,6 +4,7 @@ namespace ProductDiscounter\Order;
 
 use MongoDB\Collection;
 use MongoDB\InsertOneResult;
+use ProductDiscounter\User\UserId;
 
 class Repository
 {
@@ -19,6 +20,29 @@ class Repository
     {
         $this->collection = $collection;
     }
+
+	/**
+	 * @param UserId $userId
+	 *
+	 * @return Order[]
+	 */
+	public function findAllByUserId(UserId $userId): array
+	{
+		$results = $this->collection->find([
+			'userId' => (string)$userId
+		]);
+
+		if (!$results) {
+			return [];
+		}
+
+		$orders = [];
+		foreach ($results as $result) {
+			$orders[] = Order::fromPersistence($result);
+		}
+
+		return $orders;
+	}
 
 	/**
 	 * @param Order $order

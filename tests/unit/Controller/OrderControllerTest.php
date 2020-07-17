@@ -7,7 +7,11 @@ use PHPUnit\Framework\TestCase;
 use ProductDiscounter\Cart\Cart;
 use ProductDiscounter\Configuration\Configuration;
 use ProductDiscounter\DiscounterEngine\DiscounterEngine;
+use ProductDiscounter\Order\Order;
 use ProductDiscounter\Order\OrderId;
+use ProductDiscounter\Product\Product;
+use ProductDiscounter\Product\ProductId;
+use ProductDiscounter\User\User;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -51,7 +55,63 @@ class OrderControllerTest extends TestCase
     }
 
 	/** @test */
-	public function post_orders_with_valid_cart_should_respond_201_with_a_message()
+	public function get_orders_should_respond_200_with_an_array_of_orders()
+	{
+		$response = new Response();
+		$userId = new UserId();
+		$product = Product::fromPersistence([
+			"id" => new ProductId(),
+			"sku" => 'DZ7SL-92XNB',
+			"price" => 10.12
+		]);
+		$cart = Cart::withUserIdAndProducts($userId, [$product]);
+		$user = User::fromArray([
+			'id' => $userId,
+			'username' => 'test',
+			'password' => 'test',
+			'fullName' => 'test test',
+			'address' => 'Via test',
+			'email' => 'test@test.com'
+		]);
+		$orders = [Order::fromCartAndUser($cart, $user)];
+
+		$this->jwtMock
+			->expects($this->once())
+			->method('decode')
+			->willReturn(['id' => (string)$userId, 'username' => 'test', 'password' => 'test']);
+
+		$this->orderRepositoryMock
+			->expects($this->once())
+			->method('findAllByUserId')
+			->with($userId)
+			->willReturn($orders);
+
+		$environment = Environment::mock([
+			'REQUEST_METHOD' => 'GET',
+			'REQUEST_URI' => "/orders",
+			'QUERY_STRING' => ''
+		]);
+		$request = Request::createFromEnvironment($environment);
+
+		$response = $this->orderController->getOrders($request, $response);
+		$responseContent = $this->getResponseContent($response);
+
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertIsArray($responseContent);
+		$this->assertArrayHasKey('id', $responseContent[0]);
+		$this->assertArrayHasKey('userId', $responseContent[0]);
+		$this->assertArrayHasKey('userFullName', $responseContent[0]);
+		$this->assertArrayHasKey('userAddress', $responseContent[0]);
+		$this->assertArrayHasKey('userEmail', $responseContent[0]);
+		$this->assertArrayHasKey('cart', $responseContent[0]);
+		$this->assertArrayHasKey('id', $responseContent[0]['cart']);
+		$this->assertArrayHasKey('userId', $responseContent[0]['cart']);
+		$this->assertArrayHasKey('products', $responseContent[0]['cart']);
+		$this->assertArrayHasKey('paymentType', $responseContent[0]);
+	}
+
+	/** @test */
+	public function post_orders_with_valid_cart_should_respond_201_with_order_id_and_message()
 	{
 		$response = new Response();
 		$userId = new UserId();
@@ -109,6 +169,7 @@ class OrderControllerTest extends TestCase
 
 		$this->assertEquals(201, $response->getStatusCode());
 		$this->assertIsArray($responseContent);
+		$this->assertArrayHasKey('orderId', $responseContent);
 		$this->assertArrayHasKey('message', $responseContent);
 	}
 

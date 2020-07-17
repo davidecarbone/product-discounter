@@ -20,4 +20,4 @@ paths:
     $ref: './paths/put_carts_products.yaml'
 
   /orders:
-    $ref: './paths/post_orders.yaml'
+    $ref: './paths/orders.yaml'

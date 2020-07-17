@@ -13,6 +13,7 @@ use ProductDiscounter\DiscounterEngine\DiscounterEngine;
 use ProductDiscounter\Order\Order;
 use ProductDiscounter\Order\Repository as OrderRepository;
 use ProductDiscounter\User\User;
+use ProductDiscounter\User\UserId;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -57,6 +58,23 @@ class OrderController
 	 *
 	 * @return Response
 	 */
+    public function getOrders(Request $request, Response $response)
+    {
+	    $userData = $this->retrieveUserDataFromRequest($request);
+	    $user = User::fromArray($userData);
+	    $userId = new UserId($user->toArray()['id']);
+
+	    $orders = $this->orderRepository->findAllByUserId($userId);
+
+	    return $response->withJson($orders, 200);
+    }
+
+	/**
+	 * @param Request  $request
+	 * @param Response $response
+	 *
+	 * @return Response
+	 */
 	public function postOrders(Request $request, Response $response)
 	{
 		$userData = $this->retrieveUserDataFromRequest($request);
@@ -90,6 +108,7 @@ class OrderController
 		return $response
 			->withHeader('Location', $this->configuration->get('API_BASE_URL') . "orders/$orderId")
 			->withJson([
+				'orderId' => $orderId,
 				'message' => 'Order processed successfully.',
 			], 201);
 	}

@@ -21,6 +21,18 @@ class OrdersTest extends ContainerAwareTest
     }
 
 	/** @test */
+	public function get_orders_should_respond_200_with_an_array_of_orders()
+	{
+		$response = $this->client->get('orders', [
+			'headers' => ['JWT' => self::TEST_VALID_JWT]
+		]);
+		$responseBody = json_decode($response->getBody(), true);
+
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertIsArray($responseBody);
+	}
+
+	/** @test */
 	public function post_orders_with_formally_invalid_cartId_should_respond_400()
 	{
 		$statusCode = null;

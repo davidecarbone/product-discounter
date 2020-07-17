@@ -1,0 +1,121 @@
+get:
+  summary: List all user's orders
+  description: List all orders associated with given user's JWT
+  operationId: get_orders
+  security:
+    - JWTAuth: []
+  tags:
+    - Orders
+  parameters:
+    - name: JWT
+      in: header
+      schema:
+        type: string
+      required: true
+      description: a valid JWT token
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: "14c59f70-edd0-4b24-b280-3a248ebf75a8"
+                userId:
+                  type: string
+                  example: "721d5112-e477-419c-9928-acfbb965c761"
+                userFullName:
+                  type: string
+                  example: "Guest"
+                userAddress:
+                  type: string
+                  example: "Via Roma 1"
+                userEmail:
+                  type: string
+                  example: "guest@test.com"
+                cart:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "5f116dafb7f64f191262a9f7"
+                      userId:
+                        type: string
+                        example: "721d5112-e477-419c-9928-acfbb965c761"
+                      products:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "748112ab-0e2c-4060-919a-8c4c069386fb"
+                            sku:
+                              type: string
+                              example: "WPNSN-HAXFO"
+                            price:
+                              type: number
+                              example: 16.48
+                paymentType:
+                  type: string
+                  example: "fake"
+    '401':
+      $ref: '../components.yaml#components/responses/Unauthorized'
+post:
+  summary: Create an order
+  description: Finalize an order from a valid cart
+  operationId: post_orders
+  security:
+    - JWTAuth: []
+  tags:
+    - Orders
+  parameters:
+    - name: JWT
+      in: header
+      schema:
+        type: string
+      required: true
+      description: a valid JWT token
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            cartId:
+              type: string
+          required:
+            - cartId
+        example:
+          {
+            'cartId': '5f1082020a402863046fff7b'
+          }
+  responses:
+    '201':
+      description: Order created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../components.yaml#components/schemas/Message'
+      headers:
+        Location:
+          schema:
+            type: string
+          description: The location of the created order
+    '400':
+      $ref: '../components.yaml#components/responses/BadRequest'
+    '401':
+      $ref: '../components.yaml#components/responses/Unauthorized'
+    '422':
+      description: No such cart to order, or cart does not belong to the user associated with the JWT
+      content:
+        application/json:
+          schema:
+            $ref: '../components.yaml#components/schemas/Error'

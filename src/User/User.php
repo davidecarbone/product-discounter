@@ -55,7 +55,7 @@ final class User
         return [
             'id' => (string)$this->id,
             'username' => $this->username,
-            'password' => $this->password->getHash(),
+            'password' => $this->password ? $this->password->getHash() : null,
 	        'fullName' => $this->fullName,
 	        'address' => $this->address,
 	        'email' => $this->email,

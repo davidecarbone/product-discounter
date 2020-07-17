@@ -2,6 +2,7 @@
 
 namespace ProductDiscounter\Tests\Integration\Cart;
 
+use ProductDiscounter\Cart\CartId;
 use ProductDiscounter\Product\ProductId;
 use ProductDiscounter\Tests\ContainerAwareTest;
 use ProductDiscounter\User\UserId;
@@ -14,7 +15,7 @@ class RepositoryTest extends ContainerAwareTest
     /** @var Repository */
     private $repository;
 
-    /** @var string */
+    /** @var CartId */
     private $insertedId;
 
     public function setUp()

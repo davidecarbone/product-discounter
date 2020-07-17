@@ -25,13 +25,11 @@ put:
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: '../components.yaml#components/schemas/Message'
-              - required:
-                - cartId
-                properties:
-                  cartId:
-                    type: string
+            type: object
+            properties:
+              cartId:
+                type: string
+                example: 17899aa6-07d8-4f18-bb1e-e574bc08164e
     '401':
       $ref: '../components.yaml#components/responses/Unauthorized'
     '422':

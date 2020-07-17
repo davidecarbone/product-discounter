@@ -76,8 +76,7 @@ class CartController
         }
 
         return $response->withJson([
-        	'cartId' => $cartId,
-            'message' => 'Product has been added to your cart.'
+        	'cartId' => (string)$cartId
         ], 200);
     }
 

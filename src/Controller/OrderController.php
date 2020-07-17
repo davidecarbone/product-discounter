@@ -5,6 +5,7 @@ namespace ProductDiscounter\Controller;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 use ProductDiscounter\Authentication\JWT;
 use ProductDiscounter\Cart\Cart;
+use ProductDiscounter\Cart\CartId;
 use ProductDiscounter\Cart\CartNotFoundException;
 use ProductDiscounter\Cart\CartOwnershipException;
 use ProductDiscounter\Cart\Repository as CartRepository;
@@ -80,9 +81,9 @@ class OrderController
 		$userData = $this->retrieveUserDataFromRequest($request);
 		$user = User::fromArray($userData);
 		$requestContent = $request->getParsedBody();
-		$cartId = $requestContent['cartId'] ?? null;
 
 		try {
+			$cartId = new CartId($requestContent['cartId']) ?? null;
 			$cart = $this->cartRepository->findById($cartId);
 
 			$this->assertCartExists($cart);
@@ -90,7 +91,7 @@ class OrderController
 
 			$this->discounterEngine->applyDiscountToCart($cart);
 
-		} catch (InvalidArgumentException $e) {
+		} catch (InvalidArgumentException | \InvalidArgumentException $e) {
 			return $response->withJson([
 				'error' => 'Error while processing order: cart is not valid.',
 			], 400);

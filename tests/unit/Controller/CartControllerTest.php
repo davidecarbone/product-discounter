@@ -5,6 +5,7 @@ namespace ProductDiscounter\Tests\Unit\Controller;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ProductDiscounter\Cart\Cart;
+use ProductDiscounter\Cart\CartId;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -46,7 +47,7 @@ class CartControllerTest extends TestCase
 		$response = new Response();
 		$userId = new UserId();
 		$cart = Cart::fromPersistence([
-			"_id" => '123',
+			"id" => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 			"userId" => $userId,
 			"products" => [
 				[
@@ -85,7 +86,7 @@ class CartControllerTest extends TestCase
 	}
 
     /** @test */
-    public function put_products_with_a_valid_product_should_respond_200_with_message_and_cart_id()
+    public function put_products_with_a_valid_product_should_respond_200_with_cart_id()
     {
         $response = new Response();
         $productId = new ProductId();
@@ -109,7 +110,8 @@ class CartControllerTest extends TestCase
         $this->cartRepositoryMock
             ->expects($this->once())
             ->method('addProduct')
-            ->with($product);
+            ->with($product)
+	        ->willReturn(new CartId());
 
         $environment = Environment::mock([
             'REQUEST_METHOD' => 'PUT',
@@ -124,7 +126,6 @@ class CartControllerTest extends TestCase
         $responseContent = $this->getResponseContent($response);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertArrayHasKey('message', $responseContent);
 	    $this->assertArrayHasKey('cartId', $responseContent);
     }
 

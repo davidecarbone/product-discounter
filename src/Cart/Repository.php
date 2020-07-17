@@ -23,14 +23,14 @@ class Repository
     }
 
 	/**
-	 * @param string $cartId
+	 * @param CartId $cartId
 	 *
 	 * @return Cart|null
 	 */
-	public function findById(string $cartId): ?Cart
+	public function findById(CartId $cartId): ?Cart
 	{
 		$result = $this->collection->findOne([
-			'_id' => new ObjectId($cartId)
+			'id' => (string)$cartId
 		]);
 
 		if (!$result) {
@@ -62,9 +62,9 @@ class Repository
      * @param Product $product
      * @param UserId  $userId
      *
-     * @return string
+     * @return CartId
      */
-    public function addProduct(Product $product, UserId $userId): string
+    public function addProduct(Product $product, UserId $userId): CartId
     {
         $cart = $this->findByUserId($userId);
 
@@ -72,20 +72,23 @@ class Repository
             ? $cart = Cart::withUserIdAndProducts($userId, [$product])
             : $cart->addProduct($product);
 
-        $result = $this->collection->updateOne(
-            ['userId' => (string)$userId],
+        $this->collection->updateOne(
+            [
+            	'id' => (string)$cart->id(),
+	            'userId' => (string)$userId
+            ],
             ['$set' => ['products' => $cart->exportProductsToArray()]],
             ['upsert' => true]
         );
 
-        return (string)$result->getUpsertedId();
+        return $cart->id();
     }
 
     /**
-     * @param string $id
+     * @param CartId $cartId
      */
-    public function removeById(string $id)
+    public function removeById(CartId $cartId)
     {
-        $this->collection->deleteOne(['_id' => new ObjectID($id)]);
+        $this->collection->deleteOne(['id' => $cartId]);
     }
 }

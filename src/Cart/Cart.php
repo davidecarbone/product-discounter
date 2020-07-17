@@ -8,7 +8,7 @@ use ProductDiscounter\User\UserId;
 
 final class Cart
 {
-    /** @var string */
+    /** @var CartId */
     private $id;
 
     /** @var UserId */
@@ -30,6 +30,7 @@ final class Cart
     public static function withUserIdAndProducts(UserId $userId, array $products): Cart
     {
         $cart = new self();
+        $cart->id = new CartId();
         $cart->userId = $userId;
 
         foreach ($products as $product) {
@@ -47,7 +48,7 @@ final class Cart
     public static function fromPersistence(array $cartData): Cart
     {
         $cart = new self();
-        $cart->id = (string)$cartData['id'];
+        $cart->id = new CartId($cartData['id']);
         $cart->userId = new UserId($cartData['userId']);
 
         foreach ($cartData['products'] as $productData) {
@@ -61,6 +62,14 @@ final class Cart
         }
 
         return $cart;
+    }
+
+	/**
+	 * @return CartId
+	 */
+    public function id(): CartId
+    {
+    	return $this->id;
     }
 
     /**
@@ -87,7 +96,7 @@ final class Cart
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
+            'id' => (string)$this->id,
             'userId' => (string) $this->userId,
             'products' => $this->exportProductsToArray()
         ];

@@ -56,7 +56,7 @@ class CartsTest extends ContainerAwareTest
 	}
 
     /** @test */
-    public function put_products_with_a_valid_product_should_respond_200_with_message_and_cart_id()
+    public function put_products_with_a_valid_product_should_respond_200_with_cart_id()
     {
         $response = $this->client->put('carts/products/ffe089af-3ffc-4ac1-a7da-db4e09ad20b7', [
             'headers' => ['JWT' => self::TEST_VALID_JWT],
@@ -65,7 +65,6 @@ class CartsTest extends ContainerAwareTest
         $responseBody = json_decode($response->getBody(), true);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertArrayHasKey('message', $responseBody);
         $this->assertArrayHasKey('cartId', $responseBody);
     }
 

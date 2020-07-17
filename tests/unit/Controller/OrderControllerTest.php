@@ -116,7 +116,7 @@ class OrderControllerTest extends TestCase
 		$response = new Response();
 		$userId = new UserId();
 		$cart = Cart::fromPersistence([
-			"_id" => '123',
+			"id" => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 			"userId" => $userId,
 			"products" => [
 				[
@@ -135,7 +135,7 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->once())
 			->method('findById')
-			->with('123')
+			->with('17899aa6-07d8-4f18-bb1e-e574bc08164e')
 			->willReturn($cart);
 
 		$this->orderRepositoryMock
@@ -146,7 +146,7 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->once())
 			->method('removeById')
-			->with('123');
+			->with('17899aa6-07d8-4f18-bb1e-e574bc08164e');
 
 		$this->discounterEngineMock
 			->expects($this->once())
@@ -161,7 +161,7 @@ class OrderControllerTest extends TestCase
 		$request = Request::createFromEnvironment($environment);
 		$request = $request->withHeader('JWT', 'abc123');
 		$request = $request->withParsedBody([
-			'cartId' => '123',
+			'cartId' => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 		]);
 
 		$response = $this->orderController->postOrders($request, $response);
@@ -187,7 +187,7 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->once())
 			->method('findById')
-			->with('123')
+			->with('17899aa6-07d8-4f18-bb1e-e574bc08164e')
 			->willReturn(null);
 
 		$this->orderRepositoryMock
@@ -210,7 +210,7 @@ class OrderControllerTest extends TestCase
 		$request = Request::createFromEnvironment($environment);
 		$request = $request->withHeader('JWT', 'abc123');
 		$request = $request->withParsedBody([
-			'cartId' => '123',
+			'cartId' => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 		]);
 
 		$response = $this->orderController->postOrders($request, $response);
@@ -228,7 +228,7 @@ class OrderControllerTest extends TestCase
 		$userId = new UserId();
 		$anotherUserId = new UserId();
 		$cart = Cart::fromPersistence([
-			"_id" => '123',
+			"id" => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 			"userId" => $anotherUserId,
 			"products" => [
 				[
@@ -247,7 +247,7 @@ class OrderControllerTest extends TestCase
 		$this->cartRepositoryMock
 			->expects($this->once())
 			->method('findById')
-			->with('123')
+			->with('17899aa6-07d8-4f18-bb1e-e574bc08164e')
 			->willReturn($cart);
 
 		$this->orderRepositoryMock
@@ -270,7 +270,7 @@ class OrderControllerTest extends TestCase
 		$request = Request::createFromEnvironment($environment);
 		$request = $request->withHeader('JWT', 'abc123');
 		$request = $request->withParsedBody([
-			'cartId' => '123',
+			'cartId' => '17899aa6-07d8-4f18-bb1e-e574bc08164e',
 		]);
 
 		$response = $this->orderController->postOrders($request, $response);

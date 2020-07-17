@@ -63,7 +63,7 @@ class OrdersTest extends ContainerAwareTest
 		try {
 			$this->client->post('orders', [
 				'headers' => ['JWT' => self::TEST_VALID_JWT],
-				'json' => ['cartId' => '5f1061660a402863046ffc6a']
+				'json' => ['cartId' => '17899aa6-07d8-4f18-bb1e-e574bc08164e']
 			]);
 		} catch (ClientException $e) {
 			if ($e->hasResponse()) {

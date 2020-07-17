@@ -1,0 +1,36 @@
+get:
+  summary: List all available products
+  description: List all available products
+  operationId: get_products
+  tags:
+    - Products
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                sku:
+                  type: string
+                price:
+                  type: float
+            example:
+              [
+                {
+                  id: ffe089af-3ffc-4ac1-a7da-db4e09ad20b7,
+                  sku: DZ7SL-92XNB,
+                  price: 49.47,
+                },
+                {
+                  id: 294786ac-8306-4e85-adb4-3c328727660f,
+                  sku: KRG26-FMWPJ,
+                  price: 79.34
+
+                }
+              ]

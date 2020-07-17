@@ -1,0 +1,42 @@
+put:
+  summary: Add a product in a cart
+  description: Add a product in the cart associated with given user's JWT
+  operationId: put_carts_products
+  security:
+    - JWTAuth: []
+  tags:
+    - Carts
+  parameters:
+    - name: JWT
+      in: header
+      schema:
+        type: string
+      required: true
+      description: a valid JWT token
+    - name: id
+      in: path
+      schema:
+        type: string
+      required: true
+      description: a product id
+  responses:
+    '200':
+      description: Product added successfully
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '../components.yaml#components/schemas/Message'
+              - required:
+                - cartId
+                properties:
+                  cartId:
+                    type: string
+    '401':
+      $ref: '../components.yaml#components/responses/Unauthorized'
+    '422':
+      description: No such product to add
+      content:
+        application/json:
+          schema:
+            $ref: '../components.yaml#components/schemas/Error'

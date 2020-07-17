@@ -50,6 +50,10 @@ class ProductController
 
 			$this->assertProductExists($product);
 
+		} catch (\InvalidArgumentException $exception) {
+			return $response->withJson([
+				'error' => 'Invalid product id'
+			], 400);
 		} catch (ProductNotFoundException $exception) {
 			return $response->withJson([
 				'error' => $exception->getMessage()

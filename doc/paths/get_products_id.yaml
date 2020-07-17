@@ -1,0 +1,34 @@
+get:
+  summary: Get a single product
+  description: Get a single products
+  operationId: get_products_id
+  tags:
+    - Products
+  parameters:
+    - name: id
+      in: path
+      schema:
+        type: string
+      required: true
+      description: a product id
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                example: ffe089af-3ffc-4ac1-a7da-db4e09ad20b7
+              sku:
+                type: string
+                example: DZ7SL-92XNB
+              price:
+                type: float
+                example: 49.47
+    '400':
+      $ref: '../components.yaml#components/responses/BadRequest'
+    '404':
+      $ref: '../components.yaml#components/responses/NotFound'

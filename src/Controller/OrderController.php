@@ -40,6 +40,7 @@ class OrderController
 	 * @param JWT              $jwt
 	 * @param Configuration    $configuration
 	 */
+	// TODO introduce OrderService
     public function __construct(OrderRepository $orderRepository, CartRepository $cartRepository,
                                 DiscounterEngine $discounterEngine, JWT $jwt, Configuration $configuration)
     {
@@ -48,7 +49,6 @@ class OrderController
         $this->discounterEngine = $discounterEngine;
         $this->jwt = $jwt;
         $this->configuration = $configuration;
-	    $this->discounterEngine = $discounterEngine;
     }
 
 	/**

@@ -1,0 +1,23 @@
+openapi: "3.0.0"
+info:
+  title: Product Discounter
+  version: "0.1"
+$ref: './components.yaml'
+paths:
+  /login:
+    $ref: './paths/post_login.yaml'
+
+  /products:
+    $ref: './paths/get_products.yaml'
+
+  /products/{id}:
+    $ref: './paths/get_products_id.yaml'
+
+  /carts/products:
+    $ref: './paths/get_carts_products.yaml'
+
+  /carts/products/{id}:
+    $ref: './paths/put_carts_products.yaml'
+
+  /orders:
+    $ref: './paths/post_orders.yaml'

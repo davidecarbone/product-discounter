@@ -42,7 +42,7 @@ class OrderController
 	 * @param JWT              $jwt
 	 * @param Configuration    $configuration
 	 */
-	// TODO introduce OrderService
+	// TODO: introduce OrderService with the repos and the engine, and inject that instead
     public function __construct(OrderRepository $orderRepository, CartRepository $cartRepository,
                                 DiscounterEngine $discounterEngine, JWT $jwt, Configuration $configuration)
     {
